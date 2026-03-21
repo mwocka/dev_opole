@@ -1,0 +1,9 @@
+general:
+  name: demo
+  namespace: default
+  version: green
+
+replicaCount: 10
+
+ingress:
+  host: demo.local

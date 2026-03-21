@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: registry-1.docker.io/mateuszwocka
+      chart: golden_chart
+      targetRevision: 0.1.0
+      helm:
+        valueFiles:
+          - $values/demo_2/application_values/values.yaml
+    - repoURL: https://github.com/mwocka/dev_opole.git
+      targetRevision: main
+      ref: values
+  destination:
+    name: in-cluster
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

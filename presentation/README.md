@@ -1,32 +1,90 @@
-<p align="center">
-  <a href="https://revealjs.com">
-  <img src="https://hakim-static.s3.amazonaws.com/reveal-js/logo/v1/reveal-black-text-sticker.png" alt="reveal.js" width="500">
-  </a>
-  <br><br>
-  <a href="https://github.com/hakimel/reveal.js/actions"><img src="https://github.com/hakimel/reveal.js/workflows/tests/badge.svg"></a>
-  <a href="https://slides.com/"><img src="https://static.slid.es/images/slides-github-banner-320x40.png?1" alt="Slides" width="160" height="20"></a>
-</p>
+# GitOps w praktyce - Prezentacja
 
-reveal.js is an open source HTML presentation framework. It enables anyone with a web browser to create beautiful presentations for free. Check out the live demo at [revealjs.com](https://revealjs.com/).
+Prezentacja o automatyzacji wdrożeń w Kubernetes z Argo CD.
 
-The framework comes with a powerful feature set including [nested slides](https://revealjs.com/vertical-slides/), [Markdown support](https://revealjs.com/markdown/), [Auto-Animate](https://revealjs.com/auto-animate/), [PDF export](https://revealjs.com/pdf-export/), [speaker notes](https://revealjs.com/speaker-view/), [LaTeX typesetting](https://revealjs.com/math/), [syntax highlighted code](https://revealjs.com/code/) and an [extensive API](https://revealjs.com/api/).
+## Uruchamianie lokalnie
 
----
+```bash
+npm install
+npm run dev
+```
 
-Want to create reveal.js presentation in a graphical editor? Try <https://slides.com>. It's made by the same people behind reveal.js.
+Prezentacja będzie dostępna pod adresem: http://localhost:5173
 
----
+## Uruchamianie w kontenerze Docker
 
-### Getting started
+### Metoda 1: Docker Compose (zalecana)
 
-- 🚀 [Install reveal.js](https://revealjs.com/installation)
-- 👀 [View the demo presentation](https://revealjs.com/demo)
-- 📖 [Read the documentation](https://revealjs.com/markup/)
-- 🖌 [Try the visual editor for reveal.js at Slides.com](https://slides.com/)
-- 🎬 [Watch the reveal.js video course (paid)](https://revealjs.com/course)
+```bash
+docker-compose up
+```
 
----
+### Metoda 2: Docker build i run
 
-<div align="center">
-  MIT licensed | Copyright © 2011-2026 Hakim El Hattab, https://hakim.se
-</div>
+Build obrazu:
+```bash
+docker build -t gitops-presentation .
+```
+
+Uruchomienie kontenera:
+```bash
+docker run -p 5173:5173 gitops-presentation
+```
+
+Prezentacja będzie dostępna pod adresem: http://localhost:5173
+
+## Eksport do PDF
+
+### Metoda 1: Przez przeglądarkę (zalecana)
+
+1. Uruchom prezentację lokalnie lub w kontenerze
+2. Otwórz w przeglądarce URL: **http://localhost:5173/?print-pdf**
+3. Otwórz narzędzia developerskie (F12) i ustaw responsywny widok na szerokość 1920px
+4. Zaczekaj aż wszystkie slajdy się załadują
+5. Użyj funkcji drukowania przeglądarki (Ctrl/Cmd + P)
+6. Wybierz "Zapisz jako PDF"
+7. W opcjach drukowania ustaw:
+   - Marginesy: "Brak"
+   - Tło: "Włączone" (Background graphics)
+8. Zapisz PDF
+
+### Metoda 2: Automatyczna (wymaga decktape)
+
+Zainstaluj decktape globalnie:
+```bash
+npm install -g decktape
+```
+
+Uruchom serwer w jednym terminalu:
+```bash
+npm run dev
+```
+
+W drugim terminalu wykonaj eksport:
+```bash
+decktape reveal http://localhost:5173 prezentacja-gitops.pdf
+```
+
+## Build produkcyjny
+
+```bash
+npm run build
+```
+
+Zbudowane pliki znajdą się w folderze `dist/`.
+
+## Technologie
+
+- [reveal.js](https://revealjs.com/) - framework do prezentacji HTML
+- [Vite](https://vitejs.dev/) - build tool
+- Docker - konteneryzacja
+
+## Autor
+
+**Mateusz Wocka**
+- LinkedIn: [linkedin.com/in/mateusz-wocka](https://www.linkedin.com/in/mateusz-wocka-24ba4b188/)
+
+## Licencja
+
+- reveal.js: MIT License © Hakim El Hattab
+- Treść prezentacji: © 2026 Mateusz Wocka

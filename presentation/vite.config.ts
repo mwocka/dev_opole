@@ -13,7 +13,8 @@ export const appendExtension = (format: ModuleFormat, name: String): string => {
 
 export default defineConfig({
 	server: {
-		port: Number(process.env.npm_config_port || 8000),
+		host: '0.0.0.0',
+		port: 5173,
 	},
 	build: {
 		target: ['es2015'],

@@ -1,246 +1,370 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
+  <head>
+    <meta charset="utf-8" />
 
-		<title>GitOps w praktyce</title>
+    <title>GitOps w praktyce</title>
 
-		<meta
-			name="description"
-			content="Automatyzacja wdrożeń w Kubernetes z Argo CD"
-		/>
+    <meta
+      name="description"
+      content="Automatyzacja wdrożeń w Kubernetes z Argo CD"
+    />
 
-		<meta name="author" content="Mateusz Wocka" />
+    <meta name="author" content="Mateusz Wocka" />
 
-		<meta name="mobile-web-app-capable" content="yes" />
-		<meta name="mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent" />
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<link rel="stylesheet" href="dist/reset.css" />
-		<link rel="stylesheet" href="dist/reveal.css" />
-		<link rel="stylesheet" href="dist/theme/black.css" />
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/black.css" />
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section
-				  	data-background-image="assets/opoledev_logo.svg"
-					data-background-size="100px"
-					data-background-position="20px 20px"
-				>
-					<a href="https://argo-cd.readthedocs.io/en/stable/">
-						<img
-							src="assets/argocd_logo.svg"
-							alt="argocd logo"
-							style="height: 180px; margin: 0 auto 4rem auto; background: transparent"
-						/>
-					</a>
-					<h3>GitOps w praktyce</h3>
-					<p>Automatyzacja wdrożeń w Kubernetes z Argo CD</p>
-					<p>
-						<small>
-							<a href="https://www.linkedin.com/in/mateusz-wocka-24ba4b188/">Mateusz Wocka</a>
-						</small>
-					</p>
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      .reveal {
+        font-size: 38px;
+      }
+      .reveal h1 {
+        font-size: 2.5em;
+        margin-bottom: 0.5em;
+      }
+      .reveal h2 {
+        font-size: 1.8em;
+        margin-bottom: 0.8em;
+      }
+      .reveal ul {
+        text-align: left;
+        display: inline-block;
+      }
+      .reveal li {
+        margin-bottom: 0.5em;
+      }
+      .reveal code {
+        font-size: 0.85em;
+      }
+      .reveal pre code {
+        max-height: 500px;
+      }
+      .highlight {
+        color: #42affa;
+        font-weight: bold;
+      }
+      .logo-watermark {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        opacity: 0.3;
+        width: 80px;
+        z-index: 10;
+      }
+      .subtitle {
+        font-size: 0.7em;
+        color: #cccccc;
+        margin-top: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- Logo watermark na wszystkich slajdach -->
+        <img src="assets/opoledev_logo.svg" class="logo-watermark" alt="Opole.Dev">
+        
+        <section>
+          <a href="https://argo-cd.readthedocs.io/en/stable/">
+            <img
+              src="assets/argocd_logo.svg"
+              alt="argocd logo"
+              style="height: 180px; margin: 0 auto 4rem auto; background: transparent"
+            />
+          </a>
+          <h1>GitOps w praktyce</h1>
+          <p class="subtitle">Automatyzacja wdrożeń w Kubernetes z Argo CD</p>
+          <p style="margin-top: 2em;">
+            <small>
+              <a href="https://www.linkedin.com/in/mateusz-wocka-24ba4b188/">Mateusz Wocka</a>
+            </small>
+          </p>
+        </section>
+        <section
+        data-background-gradient="linear-gradient(to bottom, #1a1a1a, #1e3a5f)"
+        data-transition="fade"
+        >
+          <section>
+          <img src="assets/kubernetes.svg" style="height: 100px; margin-bottom: 1em;" alt="Kubernetes">
+            <h2>Czym jest Kubernetes</h2>
+          <p>Kubernetes to platforma open-source, która służy do orkiestracji skonteneryzowanych aplikacji. Koordynuje działanie klastra złożonego z wielu połączonych ze sobą serwerów, tworzących jedną, logiczną całość. Pozwala na automatyzację i zapis konfiguracji w postaci kodu.</p>
+          <aside class="notes">
+            Kubernetes (K8s) to fundament nowoczesnych aplikacji kontenerowych.
+            Automatyzuje skalowanie, zarządzanie i deployment aplikacji.
+          </aside>          </section>
+          <section>
+            <h2>Pods</h2>
+            <p>
+              <a href="https://kubernetes.io/docs/concepts/workloads/pods/">Pod</a> to kubernetesowa abstrakcja reprezentująca grupę jednego lub więcej kontenerów aplikacyjnych i zasobów udostępnionych tym kontenerom.
+            </p>
+            <pre
+              data-id="code-animation"
+            ><code data-trim class="yaml" data-line-numbers="|4|8"><script type="text/template">
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+            </script></code></pre>
+          <aside class="notes">
+            Pod to najmniejsza jednostka w Kubernetes - może zawierać jeden lub więcej kontenerów.
+            Tutaj przykład prostego Poda z nginx.
+          </aside>          </section>
+          <section>
+            <h2>Deployments</h2>
+            <p>
+              <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a> to opis stanu aplikacji w naszym klastrze Kubernetes. Jest to najlepszy sposób na wdrażanie zmian.
+            </p>
+            <pre
+              data-id="code-animation"
+            ><code data-trim class="yaml" data-line-numbers="|4|8|17-21|22-25" style="max-height: 400px;"><script type="text/template">
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: nginx-deployment
+                labels:
+                  app: nginx
+              spec:
+                replicas: 3
+                selector:
+                  matchLabels:
+                    app: nginx
+                template:
+                  metadata:
+                    labels:
+                      app: nginx
+                  spec:
+                    containers:
+                    - name: nginx
+                      image: nginx:1.14.2
+                      ports:
+                      - containerPort: 80
+                strategy:
+                  type: RollingUpdate
+                  rollingUpdate:
+                    maxUnavailable: 1
+            </script></code></pre>
 
+            <aside class="notes">
+              Deployment to deklaratywny sposób zarządzania aplikacją w K8s.
+              Określamy pożądany stan (3 repliki), a Kubernetes dba o jego utrzymanie.
+              RollingUpdate pozwala na bezpieczne wdrażanie zmian bez przestojów.
+            </aside>
+          </section>
+        </section>
+        <section
+          data-background-gradient="linear-gradient(to bottom, #1a1a1a, #1e3a5f)"
+          data-transition="fade"
+        >
+          <section>
+            <h2>GitOps</h2>
+            <blockquote
+              cite="tech.lunar.app/blog/gitops-operations-by-pull-request"
+              class="fragment fade-up"
+            >
+              &ldquo;GitOps to wykorzystanie systemu git jako głównego źródła danych w celu zarządzania aplikacjami oraz infrastrukturą.&rdquo;
+            </blockquote>
+          </section>
+          <section>
+            <h2>Ale jak inaczej?</h2>
+          <p class="fragment">Manualnie</p>
+          <p class="fragment">Pół automatem</p>
+          <p class="fragment">Pipelinem</p>
 
-				</section>
-				<section
-					data-background-image="assets/kubernetes.svg"
-					data-background-opacity="0.3"
-				>
-					<section>
-						<h2>Czym jest Kubernetes</h2>
-						<p>Kubernetes to platforma open-source, która służy do orkiestracji skonteneryzowanych aplikacji. Koordynuje działanie klastra złożonego z wielu połączonych ze sobą serwerów, tworzących jedną, logiczną całość. Pozwala na automatyzację i zapis konfiguracji w postaci kodu.</p>
-					</section>
-					<section data-auto-animate>
-						<h2>Pods</h2>
-						<p>
-							<a href="https://kubernetes.io/docs/concepts/workloads/pods/">Pod</a> to kubernetesowa abstrakcja reprezentująca grupę jednego lub więcej kontenerów aplikacyjnych i zasobów udostępnionych tym kontenerom.
-						</p>
-						<pre
-							data-id="code-animation"
-						><code data-trim class="yaml" data-line-numbers="|4|8"><script type="text/template">
-							apiVersion: v1
-							kind: Pod
-							metadata:
-							  name: nginx
-							spec:
-							  containers:
-								- name: nginx
-								  image: nginx:1.14.2
-								  ports:
-								  - containerPort: 80
-						</script></code></pre>
-					</section>
-					<section data-auto-animate>
-						<h2>Deployments</h2>
-						<p>
-							<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a> to opis stanu aplikacji w naszym klastrze Kubernetes. Jest to najlepszy sposób na wdrażanie zmian.
-						</p>
-						<pre
-							data-id="code-animation"
-						><code data-trim class="yaml" data-line-numbers="|4|8|17-21|22-25"><script type="text/template">
-							apiVersion: apps/v1
-							kind: Deployment
-							metadata:
-								name: nginx-deployment
-								labels:
-									app: nginx
-							spec:
-								replicas: 3
-								selector:
-									matchLabels:
-										app: nginx
-								template:
-									metadata:
-										labels:
-											app: nginx
-									spec:
-										containers:
-										- name: nginx
-										  image: nginx:1.14.2
-										  ports:
-										  - containerPort: 80
-								strategy:
-									type: RollingUpdate
-									rollingUpdate:
-										maxUnavailable: 1									
-						</script></code></pre>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>GitOps</h2>
-						<blockquote
-							cite="tech.lunar.app/blog/gitops-operations-by-pull-request"
-						>
-							&ldquo;GitOps to wykorzystanie systemu git jako głównego źródła danych w celu zarządzania aplikacjami oraz infrastrukturą.&rdquo;
-						</blockquote>
-					</section>
-					<section id="fragments">
-						<h2>Ale jak inaczej?</h2>
-						<p class="fragment">Manualnie</p>
-						<p class="fragment">Pół automatem</p>
-						<p class="fragment">Pipelinem</p>
+          <aside class="notes">
+              Manualnie - czyli dostarczenie zmian ręcznie poprzez zalogowanie się do serwera, podbicie wersji.
+              Pół automat - skrypty lub ansible który musi zostać skonfigurowany.
+              Pipeline - łączenie się do klastra i podbijanie wersji - helm, kustomize.
+            </aside>
+          </section>
+          <section>
+            <h2>Operator</h2>
+            <p>Operator synchronizuje zmiany z Git, wdrażając je w&nbsp;Kubernetes</p>
+          <img src="assets/git_operator.svg" data-preview-image style="height: 380px; margin-top: 1em;">
+          <aside class="notes">
+            Operator GitOps działa w klastrze i ciągle monitoruje repozytorium.
+            Gdy wykryje zmianę w Git, automatycznie aplikuje ją w Kubernetes.
+            To tzw. pull model - klaster "ściąga" zmiany, zamiast push z CI/CD.
+          </aside>          </section>
+        </section>
+        <section
+          data-background-gradient="linear-gradient(to bottom, #1a1a1a, #1e3a5f)"
+          data-transition="fade"
+        >
+          <section>
+            <h2>Argo CD</h2>
+            <p>Proste narzędzie, które monitoruje repozytorium i wdraża nowe zmiany bezpośrednio na klastrze Kubernetes</p>
+          <aside class="notes">
+            Argo CD to najpopularniejsze narzędzie GitOps dla Kubernetes.
+            Jest to operator działający w klastrze, który synchronizuje stan z repozytorium Git.
+          </aside>          </section>
+          <section data-background-iframe="https://argo-cd.readthedocs.io/en/stable/" data-background-interactive></section>
+          <section>
+            <h2>Najważniejsze funkcje</h2>
+          <p class="fragment">Webowa aplikacja</p>
+          <p class="fragment">Łatwa integracja z Helmem oraz Gitem</p>
+          <p class="fragment">Warstwa SSO</p>
+          <p class="fragment">Dodatkowe modele wdrożeniowe</p>
 
-						<aside class="notes">
-							Manualnie - czyli dostarczenie zmian ręcznie poprzez zalogowanie się do serwera, podbicie wersji.</br>
-							Pół automat - skrypty lub ansible który musi zostać skonfigurowany.</br>
-							Pipeline - łączenie się do klastra i podbijanie wersji - helm, kustomize.</br>
-						</aside>
-					</section>
-					<section>
-						<h2>Operator</h2>
-						<p>Operator synchronizuje zmiany wprowadzone w systemie kontroli wersji, wdrazajac je bezpośrednio w Kubernetesie.</p>
-						<img src="assets/git_operator.svg" data-preview-image style="height: 380px;">
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Argo CD</h2>
-						<p>Proste narzędzie, które monitoruje repozytorium i wdraża nowe zmiany bezpośrednio na klastrze Kuberentes</p>
-					</section>
-					<section data-background-iframe="https://argo-cd.readthedocs.io/en/stable/" data-background-interactive></section>
-					<section id="fragments">
-						<h2>Najwazniejsze funkcje</h2>
-						<p class="fragment">Webowa aplikacja</p>
-						<p class="fragment">Łatwa integracja z Helmem oraz Gitem</p>
-						<p class="fragment">Warstwa SSO</p>
-						<p class="fragment">Dodatkowe modele wdrozeniowe</p>
+          <aside class="notes">
+              Argo CD oferuje interfejs webowy do wizualizacji i zarządzania aplikacjami.
+              Bezproblemowo integruje się z popularnymi narzędziami takimi jak Helm i Git.
+              Zapewnia obsługę Single Sign-On (SSO) dla bezpiecznego dostępu.
+              Umożliwia zaawansowane strategie wdrażania, takie jak Blue-Green i Canary.
+            </aside>
+          </section>
+          <section>
+            <h2>Demo #1</h2>
+            <p>Instalacja Argo CD w Kubernetesie</p>
+            <p style="display: inline-block; font-size: 18px;" class="fragment fade-down">przy użyciu Helma</p>
+          <aside class="notes">
+            Pokażę jak zainstalować Argo CD używając Helm Chart.
+            Helm to menedżer pakietów dla Kubernetes.
+          </aside>          </section>
+          <section>
+            <h2>Helm</h2>
+          <p>Helm to narzędzie służące do pakowania i zarządzania zasobami Kubernetes. Umożliwia łatwiejsze wdrażanie zmian oraz porządkowanie i strukturyzację konfiguracji aplikacji.</p>
+          <aside class="notes">
+            Helm pozwala pakować konfiguracje Kubernetes w tzw. Charts.
+            Używamy go do instalacji Argo CD i później do budowania Golden Charts.
+          </aside>          </section>
+        </section>
+        <section
+          data-background-gradient="linear-gradient(to bottom, #1a1a1a, #1e3a5f)"
+          data-transition="fade"
+        >
+          <section>
+            <h2>Zarządzanie klastrami</h2>
+            <p>Argo CD może być uruchomione na poziomie docelowego klastra lub może zarządzać dodatkowymi klastrami.</p>
+          <aside class="notes">
+            Argo CD może działać w dwóch trybach:
+            1. W tym samym klastrze co aplikacje
+            2. Jako zarządca wielu klastrów (multi-cluster)
+          </aside>          </section>
+          <section>
+            <h2>Cluster-in</h2>
+          <p>Argo CD zainstalowane bezpośrednio w klastrze aplikacyjnym</p>
+        <img src="assets/argo_cluster_in.svg" data-preview-image style="height: 380px;">
 
-						<aside class="notes">
-							Dodaj notatki.
-						</aside>
-					</section>
-					<section>
-						<h2>Demo #1</h2>
-						<p>Instalacja Argo CD w Kubernetesie</p>
-						<p style="display: inline-block; font-size: 18px;" class="fragment fade-down">przy uzyciu helma</p>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Zarzadzanie klastrami</h2>
-						<p>Argo CD moze być uruchomione na poziome docelowgo klastra lub moze zarządzać dodatkowymi klastrami.</p>
-					</section>
-					<section>
-						<h2>Cluster-in</h2>
-						<img src="assets/argo_cluster_in.svg" data-preview-image style="height: 380px;">
-					</section>
-					<section>
-						<h2>Multi cluster</h2>
-						
-						<div
-							style="
-								position: absolute;
-								width: 20%;
-								right: 0;
-								color: #fff;
-								padding: 20px;
-								font-size: 20px;
-								text-align: left;
-							"
-							class="fragment fade-in-then-out"
-						>
-							<img src="assets/hamster-triggered.gif">
-						</div>
-						<img src="assets/argocd_multicluster.svg" data-preview-image style="height: 380px;">
-						<p style="font-size: 20px;" class="fragment fade-in-then-semi-out">Wszystko w izolowanej sieci, dostep poprzez certyfikaty, bez hasel na przyklad przy uzyciu <a href="https://techcommunity.microsoft.com/blog/azureinfrastructureblog/argocd-integration-with-private-aks-cluster/4313208">UAMI</a>.</p>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Wdrożanie zmian</h2>
-					</section>
-					<section>
-						<h2>Demo #2</h2>
-						<img src="assets/argocd_proste_wdrozenie.svg" data-preview-image style="height: 380px;">
-					</section>
-					<section>
-						<h2>Demo #3</h2>
-						<img src="assets/argocd_lepsze_wdrozenie.svg" data-preview-image style="height: 380px;">
-					</section>
-					<section>
-						<h2>Helm?</h2>
-						<p>Helm to narzędzie służące do pakowania i zarządzania zasobami Kubernetes. Umożliwia łatwiejsze wdrażanie zmian oraz porządkowanie i strukturyzację konfiguracji aplikacji.</p>
-					</section>					
-					<section>
-						<h2>Demo #3</h2>
-						<img src="assets/argocd_lepsze_wdrozenie.svg" data-preview-image style="height: 380px;">
-					</section>
-				</section>
-				<section>
-				<section
-					data-background-image="assets/forrest-gump-tom-hanks.gif"
-					data-background-opacity="0.3">
-					<h2>Dziekuje!</h2>
-				</section>
-				<section></section>
-				</section>
-			</div>
-		</div>
+          <aside class="notes">
+            Najprostszy scenariusz - Argo CD działa w tym samym klastrze co aplikacje.
+            Dobre na start i dla mniejszych projektów.
+          </aside>
+          </section>
+          <section>
+            <h2>Multi cluster</h2>
+            <p>Jedno Argo CD zarządzające wieloma klastrami</p>
+            <div
+              style="
+                position: absolute;
+                width: 20%;
+                right: 0;
+                color: #fff;
+                padding: 20px;
+                font-size: 20px;
+                text-align: left;
+              "
+              class="fragment fade-in-then-out"
+            >
+              <img src="assets/hamster-triggered.gif">
+            </div>
+            <img src="assets/argocd_multicluster.svg" data-preview-image style="height: 380px;">
+            <p style="font-size: 20px;" class="fragment fade-up">Wszystko w izolowanej sieci, dostęp poprzez certyfikaty, bez haseł na przykład przy użyciu <a href="https://techcommunity.microsoft.com/blog/azureinfrastructureblog/argocd-integration-with-private-aks-cluster/4313208">UAMI</a>.</p>
+          <aside class="notes">
+            Jeden klaster z Argo CD zarządza wieloma klastrami docelowymi.
+            Bezpieczeństwo: połączenia przez certyfikaty, bez haseł, w izolowanej sieci.
+            Można użyć UAMI (User Assigned Managed Identity) w Azure.
+          </aside>          </section>
+        </section>
+        <section
+          data-background-gradient="linear-gradient(to bottom, #1a1a1a, #1e3a5f)"
+          data-transition="fade"
+        >
+          <section>
+            <h2>Wdrażanie zmian</h2>
 
-		<script type="module">
-			import Reveal from 'reveal.js';
-			import RevealZoom from 'reveal.js/plugin/zoom';
-			import RevealNotes from 'reveal.js/plugin/notes';
-			import RevealSearch from 'reveal.js/plugin/search';
-			import RevealMarkdown from 'reveal.js/plugin/markdown';
-			import RevealHighlight from 'reveal.js/plugin/highlight';
+          </section>
+          <section>
+            <h2>Demo #2</h2>
+          <img src="assets/argocd_proste_wdrozenie.svg" data-preview-image style="height: 380px;">
+      <p style="font-size: 0.6em; margin-top: 1em; color: #cccccc;" class="fragment fade-up">Bezpośrednie manifesty Kubernetes - deployment.yaml, service.yaml, ingress.yaml</p>
+          <aside class="notes">
+            Proste wdrożenie - bezpośrednie manifesty Kubernetes w repozytorium.
+            Argo CD śledzi folder z plikami YAML i aplikuje je w klastrze.
+          </aside>          </section>
+          <section>
+            <h2>Demo #3</h2>
+          <img src="assets/argocd_lepsze_wdrozenie.svg" data-preview-image style="height: 380px;">
+      <p style="font-size: 0.6em; margin-top: 1em; color: #cccccc;" class="fragment fade-up">Golden Chart + pliki values - jeden szablon dla wielu aplikacji</p>
+          <aside class="notes">
+            Zaawansowane wdrożenie - Golden Chart z Helm.
+            Jeden uniwersalny chart + pliki values dla każdej aplikacji.
+            Bardziej DRY, łatwiejsze w utrzymaniu, lepsze dla wielu aplikacji.
+          </aside>          </section>
+        </section>
+    <section>
+      <section
+        data-background-image="assets/forrest-gump-tom-hanks.gif"
+        data-background-opacity="0.3"
+      >
+        <h2>Dziękuję!</h2>
 
-			Reveal.initialize({
-				controls: true,
-				progress: true,
-				center: true,
-				hash: true,
+        <aside class="notes">
+          Dziękuję za uwagę. Czy są jakieś pytania?
+        </aside>
+      </section>
+      <section>
+        <h2>Kontakt</h2>
+        <img src="assets/portret.jpeg" style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover; margin-bottom: 1em;" alt="Mateusz Wocka">
+        <p style="margin-top: 0.5em; font-size: 1.2em;">
+          <strong>Mateusz Wocka</strong>
+        </p>
+        <p style="margin-top: 1.5em; font-size: 1.1em;">
+          <i class="fab fa-linkedin" style="color: #0077b5; margin-right: 0.5em;"></i>
+          <a href="https://www.linkedin.com/in/mateusz-wocka-24ba4b188/" style="color: #42affa;">linkedin.com/in/mateusz-wocka</a>
+        </p>
 
-				plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight],
-			});
-		</script>	
-	</body>
+        <aside class="notes">
+          Zapraszam do kontaktu przez LinkedIn.
+          Materialy z prezentacji dostępne w repozytorium.
+        </aside>
+      </section>
+    </section>
+      </div>
+    </div>
+
+    <script type="module">
+      import Reveal from 'reveal.js';
+      import RevealZoom from 'reveal.js/plugin/zoom';
+      import RevealNotes from 'reveal.js/plugin/notes';
+      import RevealSearch from 'reveal.js/plugin/search';
+      import RevealMarkdown from 'reveal.js/plugin/markdown';
+      import RevealHighlight from 'reveal.js/plugin/highlight';
+
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        center: true,
+        hash: true,
+
+        plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight],
+      });
+    </script> 
+  </body>
 </html>

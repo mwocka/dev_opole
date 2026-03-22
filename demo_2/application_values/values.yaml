@@ -1,7 +1,7 @@
 general:
   name: demo
   namespace: default
-  version: green
+  version: blue
 
 replicaCount: 10
 

@@ -6,7 +6,7 @@ metadata:
   name: demo
   namespace: default
 spec:
-  replicas: 5
+  replicas: 10
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -23,7 +23,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: rollouts-demo
-        image: argoproj/rollouts-demo:green
+        image: argoproj/rollouts-demo:blue
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
